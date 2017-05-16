@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.opencv.R;
 import org.opencv.android.Utils;
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.highgui.Highgui;
+import org.opencv.imgproc.Imgproc;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -160,7 +162,11 @@ public abstract class CameraBridgeViewBase extends SurfaceView implements Surfac
                 default:
                     Log.e(TAG, "Invalid frame format! Only RGBA and Gray Scale are supported!");
             };
-
+//            Mat mRgba = inputFrame.rgba();
+//            Mat mRgbaT = mRgba.t();
+//            Core.flip(mRgba.t(), mRgbaT, 1);
+//            Imgproc.resize(mRgbaT, mRgbaT, mRgba.size());
+//            return mRgbaT;
             return result;
         }
 
