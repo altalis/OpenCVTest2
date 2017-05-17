@@ -3,7 +3,6 @@ package com.example.daniel.opencvtest2;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Surface;
 import android.view.SurfaceView;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -13,6 +12,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2{
 
@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     private JavaCameraView javaCameraView;
     //private CameraBridgeViewBase javaCameraView;
     private Mat mRgba;
+    private Imgproc imgprocCanny = new Imgproc();
     BaseLoaderCallback mLoaderCallBack = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -86,8 +87,9 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-
-        return inputFrame.rgba();
+        mRgba = inputFrame.rgba();
+        imgprocCanny.Canny(mRgba, mRgba, 36, 86);
+        return mRgba;
     }
 
 }
