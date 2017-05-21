@@ -6,12 +6,34 @@
     android:layout_height="match_parent"
     tools:context="com.example.daniel.opencvtest2.MainActivity">
 
-        <org.opencv.android.JavaCameraView
-            android:id="@+id/java_camera_view"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            opencv:show_fps="true"
-            opencv:camera_id="any"
-            android:visibility="gone"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+                <org.opencv.android.JavaCameraView
+                    android:id="@+id/java_camera_view"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:visibility="gone"
+                    opencv:camera_id="any"
+                    opencv:show_fps="true" />
+
+                <Button
+                    android:id="@+id/grayScaleButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="GrayScale" />
+
+                <Button
+                    android:id="@+id/normalScaleButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="NormalScale" />
+        </LinearLayout>
 
 </LinearLayout>

@@ -3936,7 +3936,7 @@ public class Imgproc {
  *
  * <p>The function can do the following transformations:</p>
  * <ul>
- *   <li> RGB <em><-></em> GRAY (<code>CV_BGR2GRAY, CV_RGB2GRAY, CV_GRAY2BGR,
+ *   <li> RGB <em><-></em> GRAY (<code>CV_BGR2GRAY, OLOR_BGR2GRAY, CV_GRAY2BGR,
  * CV_GRAY2RGB</code>) Transformations within RGB space like adding/removing the
  * alpha channel, reversing the channel order, conversion to/from 16-bit RGB
  * color (R5:G6:B5 or R5:G5:B5), as well as conversion to/from grayscale using:
