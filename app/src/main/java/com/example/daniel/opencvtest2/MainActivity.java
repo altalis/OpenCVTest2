@@ -7,17 +7,21 @@ import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
+
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
-import org.opencv.android.JavaCameraView;
+//import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Core;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+
 
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2{
 
@@ -27,12 +31,11 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     private CvCameraViewFrame inputFrame;
 
     //private JavaCameraView javaCameraView;
-    private Mat rawImage;
-    //private double threshold1, threshold2;
-    //private Imgproc imgprocTemp = new Imgproc();
+    private Mat rawImage, grayImage, dst, dst_norm;
+    private double threshold1, threshold2;
 
-    private Button grayScaleButton, normalScaleButton;
-    private int i=0, GrayScale=0, RGBA=1;
+    private Button grayScaleButton, normalScaleButton, cannyScaleButton, cornerHarrisButton;
+    private int i=0, GrayScale=0, RGBA=1, CannyScale=0, CornerHarrisScale=0;
 
     BaseLoaderCallback mLoaderCallBack = new BaseLoaderCallback(this) {
         @Override
@@ -65,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 Log.d(TAG, "Button1 clicked.");
                 RGBA=0;
                 GrayScale=1;
+                CannyScale=0;
+                CornerHarrisScale=0;
             };
         });
 
@@ -77,6 +82,36 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 Log.d(TAG, "Button2 clicked.");
                 RGBA=1;
                 GrayScale=0;
+                CannyScale=0;
+                CornerHarrisScale=0;
+            };
+        });
+
+        cannyScaleButton = (Button) findViewById(R.id.cannyScaleButton);
+        cannyScaleButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Log.d(TAG, "Button3 clicked.");
+                RGBA=0;
+                GrayScale=0;
+                CannyScale=1;
+                CornerHarrisScale=0;
+            };
+        });
+
+        cornerHarrisButton = (Button) findViewById(R.id.cornerHarrisScaleButton);
+        cornerHarrisButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Log.d(TAG, "Button4 clicked.");
+                RGBA=0;
+                GrayScale=0;
+                CannyScale=0;
+                CornerHarrisScale=1;
             };
         });
 
@@ -116,20 +151,17 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     @Override
     public void onCameraViewStarted(int width, int height) {
-        rawImage = new Mat(height, width, CvType.CV_8SC4);
+        rawImage = new Mat(height, width, CvType.CV_8UC4);
     }
 
     @Override
     public void onCameraViewStopped() {
+
         rawImage.release();
     }
 
     @Override
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-        //threshold1 = 50;
-        //threshold2 = 200;
-        rawImage = null;
-
         if (GrayScale == 1)
         {
             rawImage = inputFrame.gray();
@@ -138,14 +170,51 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         {
             rawImage = inputFrame.rgba();
         }
+        if (CannyScale == 1)
+        {
+            threshold1 = 800;
+            threshold2 = 800;
 
-        /*rawImage = inputFrame.rgba();
-        grayImage = rawImage;
-        cornersImage = rawImage;
-        imgprocTemp.cvtColor(rawImage, grayImage, imgprocTemp.COLOR_RGB2GRAY);
-        imgprocTemp.cornerHarris(grayImage, cornersImage, 2, 3, 0.04, imgprocTemp.BORDER_DEFAULT);*/
+            rawImage = inputFrame.rgba();
+            Imgproc.Canny(rawImage, rawImage, threshold1, threshold2);
+        }
+        if (CornerHarrisScale == 1)
+        {
+            grayImage = rawImage.clone();
+            Imgproc.cvtColor(rawImage, grayImage, Imgproc.COLOR_RGB2GRAY);
+            dst = rawImage.clone();
+            dst_norm = rawImage.clone();
+            dst = Mat.zeros(rawImage.size(), CvType.CV_32FC1);
 
-        return rawImage;
+            /*OTSU Threshold*/
+            //grayImage = rawImage.clone();
+            //Imgproc.cvtColor(rawImage, grayImage, Imgproc.COLOR_RGB2GRAY);
+            Imgproc.threshold(grayImage, grayImage, 0, 255, Imgproc.THRESH_OTSU | Imgproc.THRESH_BINARY);
+            //Imgproc.cvtColor(grayImage, rawImage, Imgproc.COLOR_GRAY2RGB);
+            //rawImage.assignTo(rawImage, CvType.CV_8UC4);
+
+           /* Detecting corners*/
+            Imgproc.cornerHarris(grayImage, dst, 7, 5, 0.05, Imgproc.BORDER_DEFAULT);
+
+           /* Normalizing */
+            Core.normalize(dst, dst_norm, 0, 255, Core.NORM_MINMAX, CvType.CV_32FC1);
+            Core.convertScaleAbs(dst_norm, dst );
+
+            int thresh = 100;
+           /* Drawing a circle around corners */
+            for( int j = 0; j < dst_norm.rows() ; j++ )
+            {
+                for( int i = 0; i < dst_norm.cols(); i++ )
+                {
+                    if( (int) dst_norm.get(j, i)[0] > thresh )
+                    {
+                        Core.circle(rawImage, new Point( i, j ), 5, new Scalar(255), 2, 8, 0 );
+                    }
+                }
+            }
+
+        }
+    return rawImage;
     }
 
 }

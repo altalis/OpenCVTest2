@@ -14,8 +14,8 @@
 
                 <org.opencv.android.JavaCameraView
                     android:id="@+id/java_camera_view"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="720px"
+                    android:layout_height="480px"
                     android:layout_weight="1"
                     android:visibility="gone"
                     opencv:camera_id="any"
@@ -34,6 +34,20 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="NormalScale" />
+
+                <Button
+                    android:id="@+id/cannyScaleButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="CannyScale" />
+
+                <Button
+                    android:id="@+id/cornerHarrisScaleButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="CornerHarrisScale" />
         </LinearLayout>
 
 </LinearLayout>
