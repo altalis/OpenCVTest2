@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     //private JavaCameraView javaCameraView;
     private Mat rawImage, grayImage, dst, dst_norm;
     private double threshold1, threshold2;
-    public static int hough_threshold = 50;
+    public static int hough_threshold = 100; //default: 50
 
     private Button HoughLinesPScaleButton, normalScaleButton, cannyScaleButton, cornerHarrisButton;
     private int i=0, HoughLinesPScale=0, RGBA=1, CannyScale=0, CornerHarrisScale=0;
@@ -163,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     @Override
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
+
         if (HoughLinesPScale == 1)
         {
             rawImage = inputFrame.rgba();
@@ -170,13 +171,12 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
        	    /*Convert to gray and apply canny*/
             Imgproc.cvtColor(rawImage, grayImage, Imgproc.COLOR_RGB2GRAY);
-            Imgproc.Canny(grayImage, rawImage, 80, 100);
+            Imgproc.Canny(grayImage, rawImage, 50, 150);
+                //default: grayImage, rawImage, 80, 100
 
-            int minLineSize = 20;
-            int lineGap = 20;
+            int minLineSize = 100;   //default: 20
+            int lineGap = 10;       //default: 20
             Mat lines = rawImage.clone();
-
-            threshold1 = 50;
 
             Imgproc.HoughLinesP(rawImage, lines, 1, Math.PI/180, hough_threshold, minLineSize, lineGap);
             for (int x = 0; x < lines.cols(); x++)
@@ -190,12 +190,12 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 Point end = new Point(x2, y2);
 
                 Core.line(rawImage, start, end, new Scalar(255,0,0), 3);
-            }
-        }
+            }//for x
+        }//HoughLinesPScale
         if (RGBA == 1)
         {
             rawImage = inputFrame.rgba();
-        }
+        }//normal
         if (CannyScale == 1)
         {
             threshold1 = 500;
@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
             rawImage = inputFrame.rgba();
             Imgproc.Canny(rawImage, rawImage, threshold1, threshold2);
-        }
+        }//CannyScale
         if (CornerHarrisScale == 1)
         {
             grayImage = rawImage.clone();
@@ -231,12 +231,12 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                     if( (int) dst_norm.get(j, i)[0] > thresh )
                     {
                         Core.circle(rawImage, new Point( i, j ), 5, new Scalar(255), 2, 8, 0 );
-                    }
-                }
-            }
+                    }//if
+                }//for i
+            }//for j
 
-        }
+        }//CornerHarrisScale
     return rawImage;
-    }
+    }//onCameraFrame
 
-}
+}//MainActivity
