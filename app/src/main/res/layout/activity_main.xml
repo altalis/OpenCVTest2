@@ -21,12 +21,12 @@
                     opencv:camera_id="any"
                     opencv:show_fps="true" />
 
-                <Button
+                <!--<Button
                     android:id="@+id/HoughLinesPScaleButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="HoughLinesPScale" />
+                    android:text="HoughLinesPScale" />-->
 
                 <Button
                     android:id="@+id/normalScaleButton"
@@ -42,12 +42,12 @@
                     android:layout_weight="1"
                     android:text="CannyScale" />
 
-                <Button
+                <!--<Button
                     android:id="@+id/cornerHarrisScaleButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="CornerHarrisScale" />
+                    android:text="CornerHarrisScale" />-->
         </LinearLayout>
 
 </LinearLayout>
