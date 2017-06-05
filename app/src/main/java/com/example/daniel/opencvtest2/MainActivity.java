@@ -11,37 +11,31 @@ import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
-//import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Core;
-import org.opencv.core.MatOfByte;
-import org.opencv.core.MatOfDMatch;
-import org.opencv.core.MatOfKeyPoint;
 import org.opencv.core.Rect;
 import org.opencv.core.Size;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
-import org.opencv.features2d.DescriptorExtractor;
-import org.opencv.features2d.DescriptorMatcher;
-import org.opencv.features2d.FeatureDetector;
-import org.opencv.features2d.Features2d;
+
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.LinkedList;
-import java.util.List;
+
+
 
 
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2{
@@ -55,8 +49,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     private Rect rect, rect1;
     private  Mat outputImg, templateImg, templateGrayImg;
-    private static int width, height, x, y, RGBA, visualizarVar;
-    private Button visualizarButton, normalButton;
+    private static int width, height, x, y, RGBA, visualizarVar, evaluarVar, flag;
+    private Button visualizarButton, normalButton, evaluarVarButton;
     private double threshold;
 
     BaseLoaderCallback mLoaderCallBack = new BaseLoaderCallback(this) {
@@ -85,21 +79,13 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         mOpenCvCameraView.enableView();
         RGBA=1;
         visualizarVar=0;
+        evaluarVar=0;
+        flag=0;
         rect = new Rect();
         outputImg = new Mat();
         templateImg = new Mat();
         templateGrayImg = new Mat();
         threshold = 0.8;
-
-        if (android.os.Environment.getExternalStorageState().equals(
-                android.os.Environment.MEDIA_MOUNTED)) {
-            cacheDir = new File(
-                    android.os.Environment.getExternalStorageDirectory(),"LazyList");
-
-            if (!cacheDir.exists()) {
-                cacheDir.mkdirs();
-            }
-        }
     }
 
     public MainActivity() {
@@ -121,6 +107,20 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 Log.d(TAG, "Button1 clicked.");
                 RGBA=1;
                 visualizarVar=0;
+                evaluarVar=0;
+            };
+        });
+
+        evaluarVarButton = (Button) findViewById(R.id.evaluarVarButton);
+        evaluarVarButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Log.d(TAG, "Button2 clicked.");
+                RGBA=0;
+                visualizarVar=0;
+                evaluarVar=1;
             };
         });
 
@@ -130,9 +130,10 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             @Override
             public void onClick(View v)
             {
-                Log.d(TAG, "Button2 clicked.");
+                Log.d(TAG, "Button3 clicked.");
                 RGBA=0;
                 visualizarVar=1;
+                evaluarVar=0;
             };
         });
 
@@ -189,52 +190,62 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
         if (RGBA == 1)
         {
-            templateImg = aInputFrame;
-            Imgproc.cvtColor(aInputFrame, templateGrayImg, Imgproc.COLOR_BGR2GRAY);
             outputImg = aInputFrame;
             dibujarRectangulo(outputImg); //dibuja desde que el MAT se crea
+            flag = 0;
+
         }//normal
-        if (visualizarVar == 1)
+        if (evaluarVar == 1)
         {
-
-           /* String infile = "/storage/emulated/0/DCIM/Camera/n2.png";
-            String tp = "/storage/emulated/0/DCIM/Camera/n1.png";
-            String outFile = "/storage/emulated/0/DCIM/Camera/n3.png";
-
             try {
-                matchTemplate(infile, tp, outFile, Imgproc.TM_CCOEFF);
-                Bitmap bm = BitmapFactory.decodeFile(outFile);
-                n3.setImageBitmap(bm);
+                matchTemplate(aInputFrame, outputImg, Imgproc.TM_SQDIFF);
+                flag = 1;
             } catch (Exception e) {
                 // TODO: handle exception
                 e.printStackTrace();
-            }*/
+            }
 
-
-
-            Intent i = new Intent(MainActivity.this, PanelsActivity.class);
-            Imgproc.GaussianBlur(aInputFrame, outputImg, new Size (7,7), 0);
-            Bitmap bm = Bitmap.createBitmap(outputImg.cols(), outputImg.rows(),Bitmap.Config.ARGB_8888);
-            Utils.matToBitmap(outputImg, bm);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            byte[] bytes = stream.toByteArray();
-            i.putExtra("BitmapPanel",bytes);
-            startActivity(i);
+        }//normal
+        if (visualizarVar == 1)
+        {
+            if(flag == 1){
+                flag = 0;
+                Intent i = new Intent(MainActivity.this, PanelsActivity.class);
+                Imgproc.GaussianBlur(aInputFrame, outputImg, new Size (7,7), 0);
+                Bitmap bm = Bitmap.createBitmap(outputImg.cols(), outputImg.rows(),Bitmap.Config.ARGB_8888);
+                Utils.matToBitmap(outputImg, bm);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                byte[] bytes = stream.toByteArray();
+                i.putExtra("BitmapPanel",bytes);
+                startActivity(i);
+            }
+            else{
+                //Toast.makeText(MainActivity.this, "Por favor evalua primero la imagen!", Toast.LENGTH_SHORT).show();
+                Log.i(TAG, "Por favor evalua primero la imagen!");
+           }
 
         }//CannyScale
         return outputImg;
     }
 
-    /*public Mat matchTemplate(String inFile, String templateFile,String outFile, int match_method) {
+    public void matchTemplate(Mat inFile, Mat outFile, int match_method) {
         Log.i(TAG, "Running Template Matching");
 
-        String pic = result.getString(YourImagepathname);//get path of your image
-        Bitmap yourSelectedImage1 = BitmapFactory.decodeFile(pic);
-        picture.setImageBitmap(yourSelectedImage1);
+        ImageView imageView1 = (ImageView) findViewById(R.id.imageView1);
+        imageView1.setDrawingCacheEnabled(true);
+        imageView1.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        imageView1.layout(0, 0,
+                imageView1.getMeasuredWidth(), imageView1.getMeasuredHeight());
+        imageView1.buildDrawingCache(true);
+        Bitmap bitmap = Bitmap.createBitmap(imageView1.getDrawingCache());
+        imageView1.setVisibility(View.INVISIBLE);
+        imageView1.setDrawingCacheEnabled(false);
 
-        Mat img = Imgproc.imdecode.imread(inFile);
-        Mat templ = Imgcodecs.imread(templateFile);
+        Mat img = inFile;
+        Mat templ = new Mat();
+        Utils.bitmapToMat(bitmap, templ);
 
         // / Create the result matrix
         int result_cols = img.cols() - templ.cols() + 1;
@@ -245,29 +256,23 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         Core.normalize(result, result, 0, 1, Core.NORM_MINMAX, -1, new Mat());
 
         // / Localizing the best match with minMaxLoc
-        MinMaxLocResult mmr = Core.minMaxLoc(result);
+        Core.MinMaxLocResult mmr = Core.minMaxLoc(result);
 
         Point matchLoc;
         double minVal; double maxVal;
-        if (match_method == Imgproc.TM_SQDIFF
-                || match_method == Imgproc.TM_SQDIFF_NORMED) {
+        if (match_method == Imgproc.TM_CCOEFF
+                || match_method == Imgproc.TM_CCOEFF_NORMED) {
             matchLoc = mmr.minLoc;
         } else {
             matchLoc = mmr.maxLoc;
         }
 
-
-
         // / Show me what you got
-        Imgproc.rectangle(img, matchLoc, new Point(matchLoc.x + templ.cols(),matchLoc.y + templ.rows()), new Scalar(0, 0,0));
+        new Core().rectangle(outFile, matchLoc, new Point(matchLoc.x + templ.cols(),matchLoc.y + templ.rows()), new Scalar(255,255,0));
 
         // Save the visualized detection.
         Log.i(TAG, "Writing: " + outFile);
-
-        Imgcodecs.imwrite(outFile, img);
-        return img;
-
-    }*/
+    }
 
     @Override
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {

@@ -35,6 +35,13 @@
                             android:text="Imagen Normal" />
 
                         <Button
+                            android:id="@+id/evaluarVarButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Evaluar Imagen" />
+
+                        <Button
                             android:id="@+id/visualizarButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -44,7 +51,7 @@
                 </LinearLayout>
 
                 <ImageView
-                    android:id="@+id/imageView"
+                    android:id="@+id/imageView1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
