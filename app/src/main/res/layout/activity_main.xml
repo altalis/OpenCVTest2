@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:opencv="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,44 +10,48 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
                 <org.opencv.android.JavaCameraView
                     android:id="@+id/java_camera_view"
-                    android:layout_width="720px"
+                    android:layout_width="fill_parent"
                     android:layout_height="480px"
                     android:layout_weight="1"
                     android:visibility="gone"
                     opencv:camera_id="any"
                     opencv:show_fps="true" />
-
-                <!--<Button
-                    android:id="@+id/HoughLinesPScaleButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="70px"
                     android:layout_weight="1"
-                    android:text="HoughLinesPScale" />-->
+                    android:orientation="horizontal">
+                        <!--<Button
+                            android:id="@+id/HoughLinesPScaleButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="HoughLinesPScale" />-->
 
-                <Button
-                    android:id="@+id/normalScaleButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="NormalScale" />
+                        <Button
+                            android:id="@+id/normalScaleButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="NormalScale" />
 
-                <Button
-                    android:id="@+id/cannyScaleButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="CannyScale" />
+                        <Button
+                            android:id="@+id/cannyScaleButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="CannyScale" />
 
-                <!--<Button
-                    android:id="@+id/cornerHarrisScaleButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="CornerHarrisScale" />-->
+                        <!--<Button
+                            android:id="@+id/cornerHarrisScaleButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="CornerHarrisScale" />-->
+                </LinearLayout>
         </LinearLayout>
-
-</LinearLayout>
+</FrameLayout>
