@@ -37,18 +37,18 @@ public class PanelsActivity extends AppCompatActivity {
         try
         {
             String jsonInput =  "[" +
-                    "\"panel:01, ubicacionX: 0, ubicacionY: 0, panelEstado: true, panelCantidad: 99\"," +
-                    "\"panel:02, ubicacionX: 0, ubicacionY: 1, panelEstado: false, panelCantidad: 0\"," +
-                    "\"panel:03, ubicacionX: 0, ubicacionY: 2, panelEstado: true, panelCantidad: 75\"," +
-                    "\"panel:04, ubicacionX: 0, ubicacionY: 3, panelEstado: true, panelCantidad: 47\"," +
-                    "\"panel:05, ubicacionX: 1, ubicacionY: 0, panelEstado: true, panelCantidad: 34\"," +
-                    "\"panel:06, ubicacionX: 1, ubicacionY: 1, panelEstado: true, panelCantidad: 28\"," +
-                    "\"panel:07, ubicacionX: 1, ubicacionY: 2, panelEstado: true, panelCantidad: 21\"," +
-                    "\"panel:08, ubicacionX: 1, ubicacionY: 3, panelEstado: true, panelCantidad: 56\"," +
-                    "\"panel:09, ubicacionX: 2, ubicacionY: 0, panelEstado: true, panelCantidad: 89\"," +
-                    "\"panel:10, ubicacionX: 2, ubicacionY: 1, panelEstado: true, panelCantidad: 69\"," +
-                    "\"panel:11, ubicacionX: 2, ubicacionY: 2, panelEstado: true, panelCantidad: 78\"," +
-                    "\"panel:12, ubicacionX: 2, ubicacionY: 3, panelEstado: true, panelCantidad: 40\"" +
+                    "\"Panel: 01"+ "\n" + "Ubicación(0,0)"+ "\n" +"Estado: true"+ "\n" +"Cantidad: 99\"," +
+                    "\"Panel: 02"+ "\n" + "Ubicación(0,1)"+ "\n" +"Estado: true"+ "\n" +"Cantidad: 0\"," +
+                    "\"Panel: 03"+ "\n" + "Ubicación(0,2)"+ "\n" +"Estado: true"+ "\n" +"Cantidad: 75\"," +
+                    "\"Panel: 04"+ "\n" + "Ubicación(0,3)"+ "\n" +"Estado: true"+ "\n" +"Cantidad: 47\"," +
+                    "\"Panel: 05"+ "\n" + "Ubicación(1,0)"+ "\n" +"Estado: true"+ "\n" +"Cantidad: 34\"," +
+                    "\"Panel: 06"+ "\n" + "Ubicación(1,1)"+ "\n" +"Estado: true"+ "\n" +"Cantidad: 28\"," +
+                    "\"Panel: 07"+ "\n" + "Ubicación(1,2)"+ "\n" +"Estado: true"+ "\n" +"Cantidad: 21\"," +
+                    "\"Panel: 08"+ "\n" + "Ubicación(1,3)"+ "\n" +"Estado: true"+ "\n" +"Cantidad: 56\"," +
+                    "\"Panel: 09"+ "\n" + "Ubicación(3,0)"+ "\n" +"Estado: true"+ "\n" +"Cantidad: 89\"," +
+                    "\"Panel: 10"+ "\n" + "Ubicación(3,1)"+ "\n" +"Estado: true"+ "\n" +"Cantidad: 69\"," +
+                    "\"Panel: 11"+ "\n" + "Ubicación(3,2)"+ "\n" +"Estado: true"+ "\n" +"Cantidad: 78\"," +
+                    "\"Panel: 12"+ "\n" + "Ubicación(3,3)"+ "\n" +"Estado: true"+ "\n" +"Cantidad: 40\"" +
                     "]";
             JSONArray jsonArray = new JSONArray(jsonInput);
             int length = jsonArray.length();

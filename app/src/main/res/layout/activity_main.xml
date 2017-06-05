@@ -27,11 +27,11 @@
                     android:orientation="horizontal">
 
                         <Button
-                            android:id="@+id/atrasButton"
+                            android:id="@+id/normalButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Atras" />
+                            android:text="Imagen Normal" />
 
                         <Button
                             android:id="@+id/visualizarButton"

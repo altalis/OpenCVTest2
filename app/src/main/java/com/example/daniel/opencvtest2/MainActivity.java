@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     private Rect rect, rect1;
     private  Mat outputImg;
     private static int width, height, x, y, RGBA, visualizarVar;
-    private Button visualizarButton, atrasButton;
+    private Button visualizarButton, normalButton;
 
     BaseLoaderCallback mLoaderCallBack = new BaseLoaderCallback(this) {
         @Override
@@ -95,8 +95,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        atrasButton = (Button) findViewById(R.id.atrasButton);
-        atrasButton.setOnClickListener(new View.OnClickListener()
+        normalButton = (Button) findViewById(R.id.normalButton);
+        normalButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
