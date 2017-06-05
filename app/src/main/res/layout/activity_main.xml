@@ -20,6 +20,7 @@
                     android:visibility="gone"
                     opencv:camera_id="any"
                     opencv:show_fps="true" />
+
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="70px"
@@ -39,6 +40,15 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Visualizar Cluster" />
+
                 </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    opencv:srcCompat="@drawable/templatepanel" />
+
         </LinearLayout>
 </FrameLayout>

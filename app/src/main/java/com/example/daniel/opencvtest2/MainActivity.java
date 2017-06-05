@@ -37,6 +37,7 @@ import org.opencv.features2d.Features2d;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
@@ -50,10 +51,13 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     private CameraBridgeViewBase mOpenCvCameraView;
     private CvCameraViewFrame inputFrame;
 
+    private File cacheDir;
+
     private Rect rect, rect1;
-    private  Mat outputImg;
+    private  Mat outputImg, templateImg, templateGrayImg;
     private static int width, height, x, y, RGBA, visualizarVar;
     private Button visualizarButton, normalButton;
+    private double threshold;
 
     BaseLoaderCallback mLoaderCallBack = new BaseLoaderCallback(this) {
         @Override
@@ -83,6 +87,19 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         visualizarVar=0;
         rect = new Rect();
         outputImg = new Mat();
+        templateImg = new Mat();
+        templateGrayImg = new Mat();
+        threshold = 0.8;
+
+        if (android.os.Environment.getExternalStorageState().equals(
+                android.os.Environment.MEDIA_MOUNTED)) {
+            cacheDir = new File(
+                    android.os.Environment.getExternalStorageDirectory(),"LazyList");
+
+            if (!cacheDir.exists()) {
+                cacheDir.mkdirs();
+            }
+        }
     }
 
     public MainActivity() {
@@ -172,11 +189,29 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
         if (RGBA == 1)
         {
+            templateImg = aInputFrame;
+            Imgproc.cvtColor(aInputFrame, templateGrayImg, Imgproc.COLOR_BGR2GRAY);
             outputImg = aInputFrame;
             dibujarRectangulo(outputImg); //dibuja desde que el MAT se crea
         }//normal
         if (visualizarVar == 1)
         {
+
+           /* String infile = "/storage/emulated/0/DCIM/Camera/n2.png";
+            String tp = "/storage/emulated/0/DCIM/Camera/n1.png";
+            String outFile = "/storage/emulated/0/DCIM/Camera/n3.png";
+
+            try {
+                matchTemplate(infile, tp, outFile, Imgproc.TM_CCOEFF);
+                Bitmap bm = BitmapFactory.decodeFile(outFile);
+                n3.setImageBitmap(bm);
+            } catch (Exception e) {
+                // TODO: handle exception
+                e.printStackTrace();
+            }*/
+
+
+
             Intent i = new Intent(MainActivity.this, PanelsActivity.class);
             Imgproc.GaussianBlur(aInputFrame, outputImg, new Size (7,7), 0);
             Bitmap bm = Bitmap.createBitmap(outputImg.cols(), outputImg.rows(),Bitmap.Config.ARGB_8888);
@@ -190,6 +225,49 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }//CannyScale
         return outputImg;
     }
+
+    /*public Mat matchTemplate(String inFile, String templateFile,String outFile, int match_method) {
+        Log.i(TAG, "Running Template Matching");
+
+        String pic = result.getString(YourImagepathname);//get path of your image
+        Bitmap yourSelectedImage1 = BitmapFactory.decodeFile(pic);
+        picture.setImageBitmap(yourSelectedImage1);
+
+        Mat img = Imgproc.imdecode.imread(inFile);
+        Mat templ = Imgcodecs.imread(templateFile);
+
+        // / Create the result matrix
+        int result_cols = img.cols() - templ.cols() + 1;
+        int result_rows = img.rows() - templ.rows() + 1;
+        Mat result = new Mat(result_rows, result_cols, CvType.CV_32FC1);
+
+        Imgproc.matchTemplate(img, templ, result, match_method);
+        Core.normalize(result, result, 0, 1, Core.NORM_MINMAX, -1, new Mat());
+
+        // / Localizing the best match with minMaxLoc
+        MinMaxLocResult mmr = Core.minMaxLoc(result);
+
+        Point matchLoc;
+        double minVal; double maxVal;
+        if (match_method == Imgproc.TM_SQDIFF
+                || match_method == Imgproc.TM_SQDIFF_NORMED) {
+            matchLoc = mmr.minLoc;
+        } else {
+            matchLoc = mmr.maxLoc;
+        }
+
+
+
+        // / Show me what you got
+        Imgproc.rectangle(img, matchLoc, new Point(matchLoc.x + templ.cols(),matchLoc.y + templ.rows()), new Scalar(0, 0,0));
+
+        // Save the visualized detection.
+        Log.i(TAG, "Writing: " + outFile);
+
+        Imgcodecs.imwrite(outFile, img);
+        return img;
+
+    }*/
 
     @Override
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
