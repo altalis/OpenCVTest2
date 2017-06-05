@@ -150,6 +150,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         mOpenCvCameraView.setCvCameraViewListener(this);
 
 
+        /// ====================================               LO MIO ALBERTO ================================================================
+
         Button button = (Button) findViewById(R.id.button2);
         final Spinner sp1 = (Spinner) findViewById(R.id.spinner);
         final Spinner sp2 = (Spinner) findViewById(R.id.spinner2);
@@ -270,6 +272,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
                 }, CONSTANTS.delay);
             }
         });
+        /// ====================================               LO MIO ALBERTO ================================================================
     }
 
     @Override
@@ -422,6 +425,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         outputImg.release();
     }
 
+
+    /// ====================================               LO MIO ALBERTO ================================================================
     double calcularAlturaTriangulo(double base, double l1, double l2){
 
         double p = (base + l1 + l2)/2;
@@ -464,5 +469,5 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
         return wifiList;
     }
-
+    /// ====================================               LO MIO ALBERTO ================================================================
 }//MainActivity
