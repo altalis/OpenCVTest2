@@ -1,17 +1,25 @@
 package com.example.daniel.opencvtest2;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Camera;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -34,8 +42,8 @@ import org.opencv.imgproc.Imgproc;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-
-
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2{
@@ -140,6 +148,128 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.java_camera_view);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
+
+
+        Button button = (Button) findViewById(R.id.button2);
+        final Spinner sp1 = (Spinner) findViewById(R.id.spinner);
+        final Spinner sp2 = (Spinner) findViewById(R.id.spinner2);
+        final Spinner sp3 = (Spinner) findViewById(R.id.spinner3);
+
+
+        final Handler hand = new Handler();
+        final TextView err = (TextView) findViewById(R.id.textView6);
+        final TextView err2 = (TextView) findViewById(R.id.textView5);
+        final TextView err3 = (TextView) findViewById(R.id.textView4);
+        final TextView err4 = (TextView) findViewById(R.id.textView3);
+
+        sp1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                       int arg2, long arg3) {
+
+                float level = WifiManager.calculateSignalLevel(CONSTANTS.wifis.get(sp1.getSelectedItemPosition()).level, CONSTANTS.LEVEL_OF_SIGNAL);
+                CONSTANTS.BSSID1=CONSTANTS.wifis.get(sp1.getSelectedItemPosition()).BSSID;
+                System.out.println(level);
+                System.out.println("test==========");
+                err.setText(Float.toString(level));
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+
+            }
+        });
+        sp2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                       int arg2, long arg3) {
+
+                float level = WifiManager.calculateSignalLevel(CONSTANTS.wifis.get(sp2.getSelectedItemPosition()).level, CONSTANTS.LEVEL_OF_SIGNAL);
+                CONSTANTS.BSSID2=CONSTANTS.wifis.get(sp2.getSelectedItemPosition()).BSSID;
+                System.out.println(level);
+                System.out.println("test==========");
+                err2.setText(Float.toString(level));
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+
+            }
+        });
+        sp3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                       int arg2, long arg3) {
+
+                float level = WifiManager.calculateSignalLevel(CONSTANTS.wifis.get(sp3.getSelectedItemPosition()).level, CONSTANTS.LEVEL_OF_SIGNAL);
+                CONSTANTS.BSSID3=CONSTANTS.wifis.get(sp3.getSelectedItemPosition()).BSSID;
+                System.out.println(level);
+                System.out.println("test==========");
+                err3.setText(Float.toString(level));
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+
+            }
+        });
+
+
+
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+
+                loadList(getApplicationContext());
+
+                sp1.setAdapter(CONSTANTS.listAdapter);
+                sp2.setAdapter(CONSTANTS.listAdapter);
+                sp3.setAdapter(CONSTANTS.listAdapter);
+
+                double senal00 = 10;
+                double senal01 = 10;
+                double senal10 = 10;
+
+                //double x = calcularAlturaTriangulo( MINSENALx00, senal00, senal10);
+                //double y = calcularAlturaTriangulo( MINSENALx00, senal00, senal01);
+
+                double panelx, panely;
+                hand.postDelayed(new Runnable(){
+                    public void run(){
+
+                        List<ScanResult> wifiList = getList(MainActivity.this);
+                        CONSTANTS.wifis=wifiList;
+
+                        for (ScanResult scanResult : wifiList) {
+                            float level = WifiManager.calculateSignalLevel(scanResult.level, CONSTANTS.LEVEL_OF_SIGNAL);
+
+                            if (scanResult.BSSID.equals(CONSTANTS.BSSID1)){
+                                err.setText(Float.toString(level));
+                                CONSTANTS.level1 = level;
+                            }
+
+                            if (scanResult.BSSID.equals(CONSTANTS.BSSID2)){
+                                err2.setText(Float.toString(level));
+                                CONSTANTS.level2 = level;
+                            }
+
+                            if (scanResult.BSSID.equals(CONSTANTS.BSSID3)){
+                                err3.setText(Float.toString(level));
+                                CONSTANTS.level3 = level;
+                            }
+
+                        }
+
+                        CONSTANTS.XActual = calcularAlturaTriangulo(CONSTANTS.LEVEL_OF_SIGNAL, CONSTANTS.LEVEL_OF_SIGNAL - CONSTANTS.level1, CONSTANTS.LEVEL_OF_SIGNAL-CONSTANTS.level2);
+                        CONSTANTS.YActual = calcularAlturaTriangulo(CONSTANTS.LEVEL_OF_SIGNAL, CONSTANTS.LEVEL_OF_SIGNAL - CONSTANTS.level2, CONSTANTS.LEVEL_OF_SIGNAL-CONSTANTS.level3);
+
+                        err4.setText(Double.toString(CONSTANTS.XActual)+","+Double.toString(CONSTANTS.YActual));
+
+                        hand.postDelayed(this, CONSTANTS.delay);
+                    }
+                }, CONSTANTS.delay);
+            }
+        });
     }
 
     @Override
@@ -290,6 +420,49 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     public void onCameraViewStopped() {
 
         outputImg.release();
+    }
+
+    double calcularAlturaTriangulo(double base, double l1, double l2){
+
+        double p = (base + l1 + l2)/2;
+        double p2 = p*(p-base)*(p-l1)*(p-l2);
+        double a = Math.sqrt(p2);
+
+        double h = 2*(a/base);
+        return h;
+    }
+
+    public void loadList(Context c){
+        WifiManager wifiManager = (WifiManager) c.getSystemService(Context.WIFI_SERVICE);
+        CONSTANTS.WIFIMAN = wifiManager;
+
+        List<String> list = new ArrayList<String>();
+
+        // Level of a Scan Result
+        List<ScanResult> wifiList = wifiManager.getScanResults();
+        for (ScanResult scanResult : wifiList) {
+            list.add(scanResult.SSID);
+        }
+        CONSTANTS.wifis=wifiList;
+
+
+
+        CONSTANTS.listAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, list);
+        CONSTANTS.listAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    }
+
+    public List<ScanResult> getList(Context c){
+
+        WifiManager wifiManager = (WifiManager) c.getSystemService(Context.WIFI_SERVICE);
+        wifiManager.startScan();
+        CONSTANTS.WIFIMAN = wifiManager;
+
+
+        List<ScanResult> wifiList = wifiManager.getScanResults();
+        CONSTANTS.wifis=wifiList;
+
+        return wifiList;
     }
 
 }//MainActivity
