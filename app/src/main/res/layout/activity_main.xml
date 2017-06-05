@@ -25,33 +25,20 @@
                     android:layout_height="70px"
                     android:layout_weight="1"
                     android:orientation="horizontal">
-                        <!--<Button
-                            android:id="@+id/HoughLinesPScaleButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="HoughLinesPScale" />-->
 
                         <Button
-                            android:id="@+id/normalScaleButton"
+                            android:id="@+id/atrasButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="NormalScale" />
+                            android:text="Atras" />
 
                         <Button
-                            android:id="@+id/cannyScaleButton"
+                            android:id="@+id/visualizarButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="CannyScale" />
-
-                        <!--<Button
-                            android:id="@+id/cornerHarrisScaleButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="CornerHarrisScale" />-->
+                            android:text="Visualizar Cluster" />
                 </LinearLayout>
         </LinearLayout>
 </FrameLayout>

@@ -1,5 +1,6 @@
 package com.example.daniel.opencvtest2;
 
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,6 +36,7 @@ import org.opencv.features2d.FeatureDetector;
 import org.opencv.features2d.Features2d;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
@@ -48,14 +50,10 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     private CameraBridgeViewBase mOpenCvCameraView;
     private CvCameraViewFrame inputFrame;
 
-    //private JavaCameraView javaCameraView;
-    private double threshold1, threshold2;
     private Rect rect, rect1;
     private  Mat outputImg;
-    private static int hough_threshold, width, height, x, y;
-
-    private Button HoughLinesPScaleButton, normalScaleButton, cannyScaleButton, cornerHarrisButton;
-    private static int i=0, HoughLinesPScale=0, RGBA=1, CannyScale=0, CornerHarrisScale=0;
+    private static int width, height, x, y, RGBA, visualizarVar;
+    private Button visualizarButton, atrasButton;
 
     BaseLoaderCallback mLoaderCallBack = new BaseLoaderCallback(this) {
         @Override
@@ -81,9 +79,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     private void initializeOpenCVDependencies() throws IOException {
         mOpenCvCameraView.enableView();
-        threshold1 = 0;
-        threshold2 = 255;
-        hough_threshold = 100; //default: 50
+        RGBA=1;
+        visualizarVar=0;
         rect = new Rect();
         outputImg = new Mat();
     }
@@ -98,61 +95,29 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*HoughLinesPScaleButton = (Button) findViewById(R.id.HoughLinesPScaleButton);
-        HoughLinesPScaleButton.setOnClickListener(new View.OnClickListener()
+        atrasButton = (Button) findViewById(R.id.atrasButton);
+        atrasButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
                 Log.d(TAG, "Button1 clicked.");
-                RGBA=0;
-                HoughLinesPScale=1;
-                CannyScale=0;
-                CornerHarrisScale=0;
+                RGBA=1;
+                visualizarVar=0;
             };
-        });*/
+        });
 
-        normalScaleButton = (Button) findViewById(R.id.normalScaleButton);
-        normalScaleButton.setOnClickListener(new View.OnClickListener()
+        visualizarButton = (Button) findViewById(R.id.visualizarButton);
+        visualizarButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
                 Log.d(TAG, "Button2 clicked.");
-                RGBA=1;
-                HoughLinesPScale=0;
-                CannyScale=0;
-                CornerHarrisScale=0;
+                RGBA=0;
+                visualizarVar=1;
             };
         });
-
-        cannyScaleButton = (Button) findViewById(R.id.cannyScaleButton);
-        cannyScaleButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Log.d(TAG, "Button3 clicked.");
-                RGBA=0;
-                HoughLinesPScale=0;
-                CannyScale=1;
-                CornerHarrisScale=0;
-            };
-        });
-
-        /*cornerHarrisButton = (Button) findViewById(R.id.cornerHarrisScaleButton);
-        cornerHarrisButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Log.d(TAG, "Button4 clicked.");
-                RGBA=0;
-                HoughLinesPScale=0;
-                CannyScale=0;
-                CornerHarrisScale=1;
-            };
-        });*/
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.java_camera_view);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
@@ -203,140 +168,26 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     public Mat recognize(Mat aInputFrame) {
 
-        //outputImg = aInputFrame.clone();
         dibujarRectangulo(outputImg);
 
         if (RGBA == 1)
         {
             outputImg = aInputFrame;
-            //dibujarRectangulo(outputImg); //dibuja desde que el MAT se crea
+            dibujarRectangulo(outputImg); //dibuja desde que el MAT se crea
         }//normal
-        if (CannyScale == 1)
+        if (visualizarVar == 1)
         {
-            Imgproc.cvtColor(aInputFrame, outputImg, Imgproc.COLOR_RGB2GRAY);
-            /*width = aInputFrame.width();
-            height = aInputFrame.height();
-
-            x = (int) (rect.tl().x + rect.br().x)/2;
-            y = (int) (rect.tl().y + rect.br().y)/2;
-
-            rect1 = new Rect((width/8) - x , (height/8) - y , (width-160), (height-120));
-
-            new Core().rectangle(outputImg, rect1.tl(), rect1.br(), new Scalar(255, 0, 0), 2, 8, 0);*/
-
-            //rawImage = inputFrame.rgba();
-            //blur = inputFrame.gray();
-            //Imgproc.Canny(rawImage, rawImage, threshold1, threshold2);
-            //Imgproc.GaussianBlur(inputFrame.gray(), blur, new Size (5,5), 0);
-            //Imgproc.Canny(blur, rawImage, threshold1, threshold2);
-            //Imgproc.threshold(blur,rawImage, threshold1, threshold2, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
-            //Imgproc.adaptiveThreshold(blur, rawImage, threshold2, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_OTSU, 11, 2);
+            Intent i = new Intent(MainActivity.this, PanelsActivity.class);
+            Imgproc.GaussianBlur(aInputFrame, outputImg, new Size (7,7), 0);
+            Bitmap bm = Bitmap.createBitmap(outputImg.cols(), outputImg.rows(),Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(outputImg, bm);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] bytes = stream.toByteArray();
+            i.putExtra("BitmapPanel",bytes);
+            startActivity(i);
 
         }//CannyScale
-
-        /*if (HoughLinesPScale == 1)
-        {
-            rawImage = inputFrame.rgba();
-            grayImage = rawImage.clone();
-
-       	    *//*Convert to gray and apply canny*//*
-            Imgproc.cvtColor(rawImage, grayImage, Imgproc.COLOR_RGB2GRAY);
-            Imgproc.Canny(grayImage, rawImage, 50, 150);
-                //default: grayImage, rawImage, 80, 100
-
-            int minLineSize = 100;   //default: 20
-            int lineGap = 10;       //default: 20
-            Mat lines = rawImage.clone();
-
-            Imgproc.HoughLinesP(rawImage, lines, 1, Math.PI/180, hough_threshold, minLineSize, lineGap);
-            for (int x = 0; x < lines.cols(); x++)
-            {
-                double[] vec = lines.get(0, x);
-                double x1 = vec[0],
-                        y1 = vec[1],
-                        x2 = vec[2],
-                        y2 = vec[3];
-                Point start = new Point(x1, y1);
-                Point end = new Point(x2, y2);
-
-                Core.line(rawImage, start, end, new Scalar(255,0,0), 3);
-            }//for x
-        }//HoughLinesPScale*/
-        /*if (CornerHarrisScale == 1)
-        {
-            grayImage = rawImage.clone();
-            Imgproc.cvtColor(rawImage, grayImage, Imgproc.COLOR_RGB2GRAY);
-            dst = rawImage.clone();
-            dst_norm = rawImage.clone();
-            dst = Mat.zeros(rawImage.size(), CvType.CV_32FC1);
-
-            *//*OTSU Threshold*//*
-            //Imgproc.threshold(grayImage, grayImage, 0, 255, Imgproc.THRESH_OTSU | Imgproc.THRESH_BINARY);
-
-           *//* Detecting corners*//*
-            Imgproc.cornerHarris(grayImage, dst, 7, 5, 0.05, Imgproc.BORDER_DEFAULT);
-
-           *//* Normalizing *//*
-            Core.normalize(dst, dst_norm, 0, 255, Core.NORM_MINMAX, CvType.CV_32FC1);
-            Core.convertScaleAbs(dst_norm, dst );
-
-            int thresh = 100;
-           *//* Drawing a circle around corners *//*
-            for( int j = 0; j < dst_norm.rows() ; j++ )
-            {
-                for( int i = 0; i < dst_norm.cols(); i++ )
-                {
-                    if( (int) dst_norm.get(j, i)[0] > thresh )
-                    {
-                        Core.circle(rawImage, new Point( i, j ), 5, new Scalar(255), 2, 8, 0 );
-                    }//if
-                }//for i
-            }//for j
-
-        }//CornerHarrisScale*/
-
-        /*Imgproc.cvtColor(aInputFrame, aInputFrame, Imgproc.COLOR_RGB2GRAY);
-        descriptors2 = new Mat();
-        keypoints2 = new MatOfKeyPoint();
-        detector.detect(aInputFrame, keypoints2);
-        descriptor.compute(aInputFrame, keypoints2, descriptors2);
-
-        // Matching
-        MatOfDMatch matches = new MatOfDMatch();
-        if (img1.type() == aInputFrame.type()) {
-            matcher.match(descriptors1, descriptors2, matches);
-        } else {
-            return aInputFrame;
-        }
-        List<DMatch> matchesList = matches.toList();
-
-        Double max_dist = 0.0;
-        Double min_dist = 100.0;
-
-        for (int i = 0; i < matchesList.size(); i++) {
-            Double dist = (double) matchesList.get(i).distance;
-            if (dist < min_dist)
-                min_dist = dist;
-            if (dist > max_dist)
-                max_dist = dist;
-        }
-
-        LinkedList<DMatch> good_matches = new LinkedList<DMatch>();
-        for (int i = 0; i < matchesList.size(); i++) {
-            if (matchesList.get(i).distance <= (1.5 * min_dist))
-                good_matches.addLast(matchesList.get(i));
-        }
-
-        MatOfDMatch goodMatches = new MatOfDMatch();
-        goodMatches.fromList(good_matches);
-        Mat outputImg = new Mat();
-        MatOfByte drawnMatches = new MatOfByte();
-        if (aInputFrame.empty() || aInputFrame.cols() < 1 || aInputFrame.rows() < 1) {
-            return aInputFrame;
-        }
-        Features2d.drawMatches(img1, keypoints1, aInputFrame, keypoints2, goodMatches, outputImg, GREEN, RED, drawnMatches, Features2d.NOT_DRAW_SINGLE_POINTS);
-        Imgproc.resize(outputImg, outputImg, aInputFrame.size());*/
-
         return outputImg;
     }
 
@@ -349,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     public void onCameraViewStarted(int width, int height) {
         outputImg = new Mat(height, width, CvType.CV_8UC4);
+        dibujarRectangulo(outputImg); //dibuja desde que el MAT se cre
     }
 
     @Override
